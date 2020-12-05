@@ -34,7 +34,7 @@ func NewPGStore(host, database, user, password string) (*pg, error) {
 }
 
 // GetProverb -
-func (pg *pg) GetProverb() (proverb string, translation string, err error) {
+func (pg *pg) GetRandomProverb() (proverb string, translation string, err error) {
 	rowCount, err := pg.getRowCount("proverb")
 	if err != nil {
 		return "", "", fmt.Errorf("unable to get rowcount for proverb table with error %w", err)
@@ -66,7 +66,7 @@ func (pg *pg) getRandomID(rowcount int64) int64 {
 }
 
 // GetPlacename -
-func (pg *pg) GetPlacename() (placename, translation string, err error) {
+func (pg *pg) GetRandomPlacename() (placename, translation string, err error) {
 	rowCount, err := pg.getRowCount("placename")
 	if err != nil {
 		return "", "", fmt.Errorf("unable to get rowcount for placename table with error %w", err)
