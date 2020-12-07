@@ -46,12 +46,14 @@ func (pg *pg) GetRandomProverb() (proverb, translation, explanation string, err 
 
 	// select a row
 	id := pg.getRandomID(rowCount)
-	err = pg.dbConn.QueryRow("select maori_name, translation, explanation from proverbs where id = $1", id).Scan(&proverb, &translation, &explanation)
+	var tmpProverb, tmpTranslation, tmpExplanation sql.NullString
+	err = pg.dbConn.QueryRow("select maori_name, translation, explanation from proverbs where id = $1", id).Scan(&tmpProverb, &tmpTranslation, &tmpExplanation)
 	if err != nil {
 		return "", "", "", fmt.Errorf("unable to query proverb with error %w", err)
 	}
 
-	return proverb, translation, explanation, nil
+
+	return tmpProverb.String, tmpTranslation.String, tmpExplanation.String, nil
 }
 
 // getRowCount -
@@ -78,10 +80,11 @@ func (pg *pg) GetRandomPlacename() (placename, translation, explanation string, 
 
 	// select a row
 	id := pg.getRandomID(rowCount)
-	err = pg.dbConn.QueryRow("select maori_name, translation, explanation from placenames where id = $1", id).Scan(&placename, &translation, &explanation)
+	var tmpPlacename, tmpTranslation, tmpExplanation sql.NullString
+	err = pg.dbConn.QueryRow("select maori_name, translation, explanation from placenames where id = $1", id).Scan(&tmpPlacename, &tmpTranslation, &tmpExplanation)
 	if err != nil {
 		return "", "", "", fmt.Errorf("unable to query placename with error %w", err)
 	}
 
-	return placename, translation, explanation, nil
+	return tmpPlacename.String, tmpTranslation.String, tmpExplanation.String, nil
 }

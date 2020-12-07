@@ -33,16 +33,26 @@ func NewTwitterClient(consumerKey, consumerSecret, accessToken, accessSecret str
 
 func (t *twitterClient) PublishContent(content string) error {
 	bottom := 0
-	top := 280
 	l := utf8.RuneCountInString(content)
+	top := 140
 	params := &twitter.StatusUpdateParams{}
 	for bottom < l {
+	if l < top {
+		top = l
+	}
 		snippet := []rune(content)[bottom:top]
+		lenSnip := len(snippet)
 		for {
-			if snippet[top] != ' ' {
-				top--
+			if snippet[lenSnip-1] != ' ' {
+				lenSnip--
 			} else {
+				top = lenSnip
 				break
+			}
+			if lenSnip == 0{
+				top = lenSnip
+				break
+
 			}
 		}
 		tweet, resp, err := t.Statuses.Update(string(snippet[bottom:top]), params)
@@ -54,7 +64,8 @@ func (t *twitterClient) PublishContent(content string) error {
 		}
 		params.InReplyToStatusID = tweet.ID
 		bottom = top
-		top += 280
+		top += 140
+		
 	}
 	return nil
 
