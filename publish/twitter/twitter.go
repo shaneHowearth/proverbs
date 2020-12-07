@@ -31,31 +31,41 @@ func NewTwitterClient(consumerKey, consumerSecret, accessToken, accessSecret str
 	return &twitterClient{twitter.NewClient(httpClient)}, nil
 }
 
+func (t *twitterClient) chunkContent(content string) []string {
+	// break the content up into chunks that are 140 or less characters
+	// if the 140 character isn't whitespace, then look at the 139th, and so on
+	// until a space is found. The next chunk then starts at that position.
+	chunks := []string{}
+	bottom := 0
+	top := 140
+	l := utf8.RuneCountInString(content)
+	for bottom < l {
+		if top >= l {
+			top = l
+			chunks = append(chunks, content[bottom:top])
+			break
+		}
+		chunk := content[bottom:top]
+		for i := (top - bottom) - 1; i > 0; i-- {
+			r := []rune(chunk)[i]
+			if r == ' ' || r == '\n' || r == '\t' {
+				top = bottom + i
+				break
+			}
+		}
+		chunks = append(chunks, content[bottom:top])
+		bottom = top + 1
+		top += 140
+	}
+
+	return chunks
+}
+
 // PublishContent -
 func (t *twitterClient) PublishContent(content string) error {
-	bottom := 0
-	l := utf8.RuneCountInString(content)
-	top := 140
 	params := &twitter.StatusUpdateParams{}
-	for bottom < l {
-		if l < top {
-			top = l
-		}
-		snippet := []rune(content)[bottom:top]
-		lenSnip := len(snippet)
-		for {
-			if snippet[lenSnip-1] != ' ' {
-				lenSnip--
-			} else {
-				top = lenSnip
-				break
-			}
-			if lenSnip == 0 {
-				top = lenSnip
-				break
-			}
-		}
-		tweet, resp, err := t.Statuses.Update(string(snippet[bottom:top]), params)
+	for _, snippet := range t.chunkContent(content) {
+		tweet, resp, err := t.Statuses.Update(string(snippet), params)
 		if resp.StatusCode != http.StatusOK {
 			log.Printf("http return status was %d, with %s", resp.StatusCode, resp.Status)
 			log.Printf("accompanied with error: %v", err)
@@ -63,8 +73,6 @@ func (t *twitterClient) PublishContent(content string) error {
 			return err
 		}
 		params.InReplyToStatusID = tweet.ID
-		bottom = top
-		top += 140
 	}
 	return nil
 
