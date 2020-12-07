@@ -6,24 +6,28 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/jackc/pgx"
+//	"github.com/jackc/pgx"
+	"database/sql"
+	_ "github.com/lib/pq"
 )
 
 type pg struct {
-	dbConn *pgx.ConnPool
+	dbConn *sql.DB
 }
 
 // NewPGStore -
 // nolint:golint
-func NewPGStore(host, database, user, password string) (*pg, error) {
-	pgxConfig := pgx.ConnConfig{
-		Host:     host,
-		Database: database,
-		User:     user,
-		Password: password,
+func NewPGStore(connStr string) (*pg, error) {
+	conn, err := sql.Open("postgres", connStr)
+	if err != nil {
+		return nil, fmt.Errorf("Unable to parse DATABASE_URL error %v", err)
 	}
+
+/*
 	pgxConnPoolConfig := pgx.ConnPoolConfig{ConnConfig: pgxConfig, MaxConnections: 3, AfterConnect: nil, AcquireTimeout: 0}
 	conn, err := pgx.NewConnPool(pgxConnPoolConfig)
+
+*/
 	if err != nil {
 		return nil, fmt.Errorf("unable to create db connection with error %w", err)
 	}
@@ -35,14 +39,14 @@ func NewPGStore(host, database, user, password string) (*pg, error) {
 
 // GetProverb -
 func (pg *pg) GetRandomProverb() (proverb, translation, explanation string, err error) {
-	rowCount, err := pg.getRowCount("proverb")
+	rowCount, err := pg.getRowCount("proverbs")
 	if err != nil {
-		return "", "", "", fmt.Errorf("unable to get rowcount for proverb table with error %w", err)
+		return "", "", "", fmt.Errorf("unable to get rowcount for proverbs table with error %w", err)
 	}
 
 	// select a row
 	id := pg.getRandomID(rowCount)
-	err = pg.dbConn.QueryRow("select maori_name, translation, explanation from proverb where id = $1", id).Scan(&proverb, &translation, &explanation)
+	err = pg.dbConn.QueryRow("select maori_name, translation, explanation from proverbs where id = $1", id).Scan(&proverb, &translation, &explanation)
 	if err != nil {
 		return "", "", "", fmt.Errorf("unable to query proverb with error %w", err)
 	}
@@ -53,7 +57,7 @@ func (pg *pg) GetRandomProverb() (proverb, translation, explanation string, err 
 // getRowCount -
 func (pg *pg) getRowCount(table string) (int64, error) {
 	var n int64
-	query := fmt.Sprintf("SELECT COUNT(id) FROM %s", pgx.Identifier.Sanitize([]string{table}))
+	query := fmt.Sprintf("SELECT COUNT(id) FROM %s", table)
 	err := pg.dbConn.QueryRow(query).Scan(&n)
 	return n, err
 }
@@ -67,14 +71,14 @@ func (pg *pg) getRandomID(rowcount int64) int64 {
 
 // GetPlacename -
 func (pg *pg) GetRandomPlacename() (placename, translation, explanation string, err error) {
-	rowCount, err := pg.getRowCount("placename")
+	rowCount, err := pg.getRowCount("placenames")
 	if err != nil {
 		return "", "", "", fmt.Errorf("unable to get rowcount for placename table with error %w", err)
 	}
 
 	// select a row
 	id := pg.getRandomID(rowCount)
-	err = pg.dbConn.QueryRow("select maori_name, translation, explanation from placename where id = $1", id).Scan(&placename, &translation, &explanation)
+	err = pg.dbConn.QueryRow("select maori_name, translation, explanation from placenames where id = $1", id).Scan(&placename, &translation, &explanation)
 	if err != nil {
 		return "", "", "", fmt.Errorf("unable to query placename with error %w", err)
 	}
