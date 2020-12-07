@@ -34,20 +34,20 @@ func NewPGStore(host, database, user, password string) (*pg, error) {
 }
 
 // GetProverb -
-func (pg *pg) GetRandomProverb() (proverb string, translation string, err error) {
+func (pg *pg) GetRandomProverb() (proverb, translation, explanation string, err error) {
 	rowCount, err := pg.getRowCount("proverb")
 	if err != nil {
-		return "", "", fmt.Errorf("unable to get rowcount for proverb table with error %w", err)
+		return "", "", "", fmt.Errorf("unable to get rowcount for proverb table with error %w", err)
 	}
 
 	// select a row
 	id := pg.getRandomID(rowCount)
-	err = pg.dbConn.QueryRow("select  maori, pakeha from proverb where id = $1", id).Scan(&proverb, &translation)
+	err = pg.dbConn.QueryRow("select maori_name, translation, explanation from proverb where id = $1", id).Scan(&proverb, &translation, &explanation)
 	if err != nil {
-		return "", "", fmt.Errorf("unable to query proverb with error %w", err)
+		return "", "", "", fmt.Errorf("unable to query proverb with error %w", err)
 	}
 
-	return proverb, translation, nil
+	return proverb, translation, explanation, nil
 }
 
 // getRowCount -
@@ -66,18 +66,18 @@ func (pg *pg) getRandomID(rowcount int64) int64 {
 }
 
 // GetPlacename -
-func (pg *pg) GetRandomPlacename() (placename, translation string, err error) {
+func (pg *pg) GetRandomPlacename() (placename, translation, explanation string, err error) {
 	rowCount, err := pg.getRowCount("placename")
 	if err != nil {
-		return "", "", fmt.Errorf("unable to get rowcount for placename table with error %w", err)
+		return "", "", "", fmt.Errorf("unable to get rowcount for placename table with error %w", err)
 	}
 
 	// select a row
 	id := pg.getRandomID(rowCount)
-	err = pg.dbConn.QueryRow("select  maori, pakeha from placename where id = $1", id).Scan(&placename, &translation)
+	err = pg.dbConn.QueryRow("select maori_name, translation, explanation from placename where id = $1", id).Scan(&placename, &translation, &explanation)
 	if err != nil {
-		return "", "", fmt.Errorf("unable to query placename with error %w", err)
+		return "", "", "", fmt.Errorf("unable to query placename with error %w", err)
 	}
 
-	return placename, translation, nil
+	return placename, translation, explanation, nil
 }
