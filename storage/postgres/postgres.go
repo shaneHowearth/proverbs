@@ -6,9 +6,9 @@ import (
 	"math/rand"
 	"time"
 
-//	"github.com/jackc/pgx"
 	"database/sql"
-	_ "github.com/lib/pq"
+
+	_ "github.com/lib/pq" //nolint:golint
 )
 
 type pg struct {
@@ -23,11 +23,6 @@ func NewPGStore(connStr string) (*pg, error) {
 		return nil, fmt.Errorf("Unable to parse DATABASE_URL error %v", err)
 	}
 
-/*
-	pgxConnPoolConfig := pgx.ConnPoolConfig{ConnConfig: pgxConfig, MaxConnections: 3, AfterConnect: nil, AcquireTimeout: 0}
-	conn, err := pgx.NewConnPool(pgxConnPoolConfig)
-
-*/
 	if err != nil {
 		return nil, fmt.Errorf("unable to create db connection with error %w", err)
 	}
@@ -51,7 +46,6 @@ func (pg *pg) GetRandomProverb() (proverb, translation, explanation string, err 
 	if err != nil {
 		return "", "", "", fmt.Errorf("unable to query proverb with error %w", err)
 	}
-
 
 	return tmpProverb.String, tmpTranslation.String, tmpExplanation.String, nil
 }

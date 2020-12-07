@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+
 	// Collect twitter credentials
 	twitterAPIKey := os.Getenv("TWITTER_API_KEY")
 	twitterAPISecret := os.Getenv("TWITTER_API_SECRET")
@@ -26,11 +27,7 @@ func main() {
 	platforms := []publish.Publisher{}
 	platforms = append(platforms, tc)
 	// Connect to the data store
-	// pgHost := os.Getenv("POSTGRES_HOST")
 	pgDB := os.Getenv("POSTGRES_DATABASE")
-	// pgUser := os.Getenv("POSTGRES_USER")
-	// pgPW := os.Getenv("POSTGRES_PASSWORD")
-	//db, err := postgresstore.NewPGStore(pgHost, pgDB, pgUser, pgPW)
 	db, err := postgresstore.NewPGStore(pgDB)
 	if err != nil {
 		log.Fatalf("Unable to create postgres connection with error %v", err)

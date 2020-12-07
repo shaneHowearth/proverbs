@@ -23,11 +23,12 @@ func isMorning() bool {
 		start, end = end, start
 
 	}
-	check = check.UTC()
+	check = check.Local()
 	return !check.Before(start) && !check.After(end)
 
 }
 
+// GetContent -
 func GetContent(s Store) (content, translation, explanation string, err error) {
 	if isMorning() {
 		return s.GetRandomProverb()
