@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"unicode"
-	"unicode/utf8"
 
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
@@ -40,24 +39,25 @@ func (t *twitterClient) chunkContent(content string) []string {
 	// until a space is found. The next chunk then starts at that position.
 	chunks := []string{}
 	bottom := 0
+	runeContent := []rune(content)
 	top := tweetLen
-	l := utf8.RuneCountInString(content)
+	l := len(runeContent)
 	for bottom < l {
 		if top >= l {
 			top = l
-			chunks = append(chunks, string([]rune(content)[bottom:top]))
+			chunks = append(chunks, string(runeContent[bottom:top]))
 			break
 		}
-		chunk := content[bottom:top]
+		chunk := runeContent[bottom:top]
 		// adjust the top value down to the first whitespace char
-		for i := utf8.RuneCountInString(chunk) - 1; i > 0; i-- {
+		for i := len(chunk) - 1; i > 0; i-- {
 			r := []rune(chunk)[i]
 			if unicode.IsSpace(r) {
 				top = bottom + i
 				break
 			}
 		}
-		chunks = append(chunks, string([]rune(content)[bottom:top]))
+		chunks = append(chunks, string(runeContent[bottom:top]))
 		bottom = top + 1
 		top += tweetLen
 	}
