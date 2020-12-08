@@ -21,8 +21,15 @@ func TestChunkContent(t *testing.T) {
 			output: []string{"One two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two", "threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two three"},
 		},
 		"Six groups split on space": {
-			input:  "One two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two three",
-			output: []string{"One two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two", "threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne", "two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two", "threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne", "two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two", "threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two three"},
+			input: "One two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two three",
+			output: []string{
+				"One two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two",
+				"threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two",
+				"threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two",
+				"threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two",
+				"threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two",
+				"threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two",
+				"threeOne two threeOne two three"},
 		},
 		"Two groups split on new line": {
 			input:  "One two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two\nthreeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two three",
@@ -38,7 +45,7 @@ func TestChunkContent(t *testing.T) {
 			output := twitClient.chunkContent(tc.input)
 			assert.Equal(t, len(tc.output), len(output), "Outputs have different lengths")
 			for i := range tc.output {
-				assert.Equal(t, tc.output[i], output[i], "output strings do not match at position ", i)
+				assert.Equalf(t, tc.output[i], output[i], "output strings do not match at position %d", i)
 			}
 		})
 	}

@@ -31,13 +31,15 @@ func NewTwitterClient(consumerKey, consumerSecret, accessToken, accessSecret str
 	return &twitterClient{twitter.NewClient(httpClient)}, nil
 }
 
+const tweetLen = 139
+
 func (t *twitterClient) chunkContent(content string) []string {
 	// break the content up into chunks that are 140 or less characters
 	// if the 140 character isn't whitespace, then look at the 139th, and so on
 	// until a space is found. The next chunk then starts at that position.
 	chunks := []string{}
 	bottom := 0
-	top := 140
+	top := tweetLen
 	l := utf8.RuneCountInString(content)
 	for bottom < l {
 		if top >= l {
@@ -55,7 +57,7 @@ func (t *twitterClient) chunkContent(content string) []string {
 		}
 		chunks = append(chunks, content[bottom:top])
 		bottom = top + 1
-		top += 140
+		top += tweetLen
 	}
 
 	return chunks
