@@ -39,6 +39,16 @@ func TestChunkContent(t *testing.T) {
 			input:  "One two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two\tthreeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two three",
 			output: []string{"One two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two", "threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two threeOne two three"},
 		},
+		"breaking in prod": {
+			input: `He aha koa. Hai te tokorima a Māui.
+
+			It does not matter. I have the five of Māui.
+			(If the host apologises for the lack of cutlery available, the guest replies that he has his fingers - the five of Māui.)`,
+			output: []string{`He aha koa. Hai te tokorima a Māui.
+
+			It does not matter. I have the five of Māui.
+			(If the host apologises for the lack of cutlery`, `available, the guest replies that he has his fingers - the five of Māui.)`},
+		},
 	}
 	for name, tc := range testcases {
 		t.Run(name, func(t *testing.T) {

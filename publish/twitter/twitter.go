@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"unicode"
 	"unicode/utf8"
 
 	"github.com/dghubble/go-twitter/twitter"
@@ -44,18 +45,19 @@ func (t *twitterClient) chunkContent(content string) []string {
 	for bottom < l {
 		if top >= l {
 			top = l
-			chunks = append(chunks, content[bottom:top])
+			chunks = append(chunks, string([]rune(content)[bottom:top]))
 			break
 		}
 		chunk := content[bottom:top]
+		// adjust the top value down to the first whitespace char
 		for i := utf8.RuneCountInString(chunk) - 1; i > 0; i-- {
 			r := []rune(chunk)[i]
-			if r == ' ' || r == '\n' || r == '\t' {
+			if unicode.IsSpace(r) {
 				top = bottom + i
 				break
 			}
 		}
-		chunks = append(chunks, content[bottom:top])
+		chunks = append(chunks, string([]rune(content)[bottom:top]))
 		bottom = top + 1
 		top += tweetLen
 	}
