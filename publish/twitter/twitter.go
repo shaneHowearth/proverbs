@@ -46,7 +46,7 @@ func (t *twitterClient) chunkContent(content string) []string {
 			break
 		}
 		chunk := content[bottom:top]
-		for i := (top - bottom) - 1; i > 0; i-- {
+		for i := utf8.RuneCountInString(chunk) - 1; i > 0; i-- {
 			r := []rune(chunk)[i]
 			if r == ' ' || r == '\n' || r == '\t' {
 				top = bottom + i
