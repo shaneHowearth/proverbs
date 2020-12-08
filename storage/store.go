@@ -2,6 +2,7 @@
 package storage
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 )
@@ -29,9 +30,13 @@ func isMorning() bool {
 }
 
 // GetContent -
-func GetContent(s Store) (content, translation, explanation string, err error) {
-	if isMorning() {
+func GetContent(set string, s Store) (content, translation, explanation string, err error) {
+	switch set {
+	case "proverb":
 		return s.GetRandomProverb()
+	case "placename":
+		return s.GetRandomPlacename()
+	default:
+		return "", "", "", fmt.Errorf("%s does not exist as an option", set)
 	}
-	return s.GetRandomPlacename()
 }

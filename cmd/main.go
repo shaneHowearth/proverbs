@@ -2,6 +2,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 	"strings"
@@ -13,12 +14,12 @@ import (
 )
 
 func main() {
-
 	// Collect twitter credentials
 	twitterAPIKey := os.Getenv("TWITTER_API_KEY")
 	twitterAPISecret := os.Getenv("TWITTER_API_SECRET")
 	twitterAccessToken := os.Getenv("TWITTER_ACCESS_TOKEN")
 	twitterAccessTokenSecret := os.Getenv("TWITTER_ACCESS_TOKEN_SECRET")
+
 	// Create the twitter client
 	tc, err := twitter.NewTwitterClient(twitterAPIKey, twitterAPISecret, twitterAccessToken, twitterAccessTokenSecret)
 	if err != nil {
@@ -26,6 +27,7 @@ func main() {
 	}
 	platforms := []publish.Publisher{}
 	platforms = append(platforms, tc)
+
 	// Connect to the data store
 	pgDB := os.Getenv("POSTGRES_DATABASE")
 	db, err := postgresstore.NewPGStore(pgDB)
@@ -34,7 +36,9 @@ func main() {
 	}
 
 	// Retrieve content
-	data, translation, explanation, err := storage.GetContent(db)
+	set := flag.String("type", "", "the name of the content set to produce")
+	flag.Parse()
+	data, translation, explanation, err := storage.GetContent(*set, db)
 	if err != nil {
 		log.Fatalf("Unable to retrieve content with error %v", err)
 	}
