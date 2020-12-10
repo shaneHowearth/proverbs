@@ -31,7 +31,7 @@ func NewTwitterClient(consumerKey, consumerSecret, accessToken, accessSecret str
 	return &twitterClient{twitter.NewClient(httpClient)}, nil
 }
 
-const tweetLen = 139
+const tweetLen = 280
 
 func (t *twitterClient) chunkContent(content string) []string {
 	// break the content up into chunks that are 140 or less characters
